@@ -31,6 +31,18 @@ public class Rocket : MonoBehaviour
         Thrust();
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Friendly"))
+        {
+            Debug.Log("Friendly object");
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Thrust()
     {
         if (Input.GetAxis("Jump") != 0)
