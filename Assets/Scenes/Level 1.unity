@@ -821,6 +821,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7255546664199131305, guid: a58f722a747cf8a48a602ddb63cfd17f,
+        type: 3}
+      propertyPath: respawnDelay
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a58f722a747cf8a48a602ddb63cfd17f, type: 3}
 --- !u!1001 &270007960405772610
@@ -834,6 +839,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Directional Light
+      objectReference: {fileID: 0}
+    - target: {fileID: 270007959970298840, guid: 3a01c32a635f1304c92da2cc7a49c010,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 270007959970298840, guid: 3a01c32a635f1304c92da2cc7a49c010,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 270007959970298840, guid: 3a01c32a635f1304c92da2cc7a49c010,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 270007959970298840, guid: 3a01c32a635f1304c92da2cc7a49c010,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 270007959970298841, guid: 3a01c32a635f1304c92da2cc7a49c010,
         type: 3}
@@ -888,26 +913,6 @@ PrefabInstance:
     - target: {fileID: 270007959970298841, guid: 3a01c32a635f1304c92da2cc7a49c010,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 270007959970298840, guid: 3a01c32a635f1304c92da2cc7a49c010,
-        type: 3}
-      propertyPath: m_BoundingSphereOverride.x
-      value: NaN
-      objectReference: {fileID: 0}
-    - target: {fileID: 270007959970298840, guid: 3a01c32a635f1304c92da2cc7a49c010,
-        type: 3}
-      propertyPath: m_BoundingSphereOverride.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 270007959970298840, guid: 3a01c32a635f1304c92da2cc7a49c010,
-        type: 3}
-      propertyPath: m_BoundingSphereOverride.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 270007959970298840, guid: 3a01c32a635f1304c92da2cc7a49c010,
-        type: 3}
-      propertyPath: m_BoundingSphereOverride.w
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

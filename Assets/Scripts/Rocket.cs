@@ -7,9 +7,17 @@ public class Rocket : MonoBehaviour
 {
 
     //configuration params
+    [Header("Sound")]
+    [SerializeField] float respawnDelay = 1f;
+
+    [Header("Movement")]
     [SerializeField] float mainThrust = 15f;
     [SerializeField] float rotThrust = 100f;
-    [SerializeField] float respawnDelay = 1f;
+
+    [Header("Sound")]
+    [SerializeField] AudioClip thrusterSFX = null;
+    [SerializeField] AudioClip deathSFX = null;
+    [SerializeField] AudioClip winSFX = null;
 
     //Cache Variables
     Rigidbody rb = null;
@@ -34,6 +42,7 @@ public class Rocket : MonoBehaviour
         }
     }
 
+    //For rigidbody physics updates
     private void FixedUpdate()
     {
 
@@ -43,42 +52,67 @@ public class Rocket : MonoBehaviour
         }
     }
 
+    //Checks collision with other objects.
     private void OnCollisionEnter(Collision collision)
     {
         if (!(state == State.Alive)) { return; }
 
+        ProcessCollision(collision);
+    }
+
+    //Processes collision depending on tag
+    private void ProcessCollision(Collision collision)
+    {
+        audioSource.Stop();
+
         if (collision.gameObject.CompareTag("Obstacle"))
         {
-            state = State.Dying;
-            audioSource.Stop();
-            Invoke("Die", respawnDelay);
+            StartDeathSequence();
         }
-        else if(collision.gameObject.CompareTag("Finish"))
+        else if (collision.gameObject.CompareTag("Finish"))
         {
-            state = State.Transcending;
-            Invoke("LoadNextScene", respawnDelay);
+            StartWinSequence();
         }
     }
 
+    //Win the level
+    private void StartWinSequence()
+    {
+        audioSource.PlayOneShot(winSFX);
+        state = State.Transcending;
+        Invoke("LoadNextScene", respawnDelay);
+    }
+
+    //Die on the level
+    private void StartDeathSequence()
+    {
+        audioSource.PlayOneShot(deathSFX);
+        state = State.Dying;
+        Invoke("Respawn", respawnDelay);
+    }
+
+    //Loads scene 2
     private void LoadNextScene()
     {
         SceneManager.LoadScene(1);
     }
 
-    private void Die()
+    //Respawns the player
+    private void Respawn()
     {
-        transform.position = startPosition;
-        transform.rotation = Quaternion.identity;
         state = State.Alive;
+        transform.position = startPosition;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    //Produces the thrust force for the rocket when "jump" axis is input
     private void Thrust()
     {
         if (Input.GetAxis("Jump") != 0)
         {
             if (!audioSource.isPlaying)
             {
-                audioSource.Play();
+                audioSource.PlayOneShot(thrusterSFX);
             }
             rb.AddRelativeForce(Vector3.up * mainThrust);
         }
@@ -89,6 +123,7 @@ public class Rocket : MonoBehaviour
 
     }
 
+    //Rotates the rocket based on horizontal axis input
     private void Rotate()
     {
         rb.freezeRotation = true; //take manual control of rotation
