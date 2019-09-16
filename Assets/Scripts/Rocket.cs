@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
@@ -8,54 +9,82 @@ public class Rocket : MonoBehaviour
     //configuration params
     [SerializeField] float mainThrust = 15f;
     [SerializeField] float rotThrust = 100f;
+    [SerializeField] float respawnDelay = 1f;
 
     //Cache Variables
     Rigidbody rb = null;
-    AudioSource soundEffectPlayer = null;
+    AudioSource audioSource = null;
+    Vector3 startPosition;
+    enum State {Alive, Dying, Transcending};
+    State state = State.Alive;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
-        soundEffectPlayer = gameObject.GetComponent<AudioSource>();
+        audioSource = gameObject.GetComponent<AudioSource>();
+        startPosition = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Rotate();   
+        if (state == State.Alive) {
+            Rotate();
+        }
     }
 
     private void FixedUpdate()
     {
-        Thrust();
+
+        if (state == State.Alive)
+        {
+            Thrust();
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Friendly"))
+        if (!(state == State.Alive)) { return; }
+
+        if (collision.gameObject.CompareTag("Obstacle"))
         {
-            Debug.Log("Friendly object");
+            state = State.Dying;
+            audioSource.Stop();
+            Invoke("Die", respawnDelay);
         }
-        else
+        else if(collision.gameObject.CompareTag("Finish"))
         {
-            Destroy(gameObject);
+            state = State.Transcending;
+            Invoke("LoadNextScene", respawnDelay);
         }
+    }
+
+    private void LoadNextScene()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    private void Die()
+    {
+        transform.position = startPosition;
+        transform.rotation = Quaternion.identity;
+        state = State.Alive;
     }
 
     private void Thrust()
     {
         if (Input.GetAxis("Jump") != 0)
         {
-            if (!soundEffectPlayer.isPlaying)
+            if (!audioSource.isPlaying)
             {
-                soundEffectPlayer.Play();
+                audioSource.Play();
             }
             rb.AddRelativeForce(Vector3.up * mainThrust);
         }
         else
         {
-            soundEffectPlayer.Stop();
+            audioSource.Stop();
         }
 
     }
