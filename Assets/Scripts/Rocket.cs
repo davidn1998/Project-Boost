@@ -5,6 +5,10 @@ using UnityEngine;
 public class Rocket : MonoBehaviour
 {
 
+    //configuration params
+    [SerializeField] float mainThrust = 15f;
+    [SerializeField] float rotThrust = 100f;
+
     //Cache Variables
     Rigidbody rb = null;
     AudioSource soundEffectPlayer = null;
@@ -19,15 +23,15 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Rotation();   
+        Rotate();   
     }
 
     private void FixedUpdate()
     {
-        Thrusters();
+        Thrust();
     }
 
-    private void Thrusters()
+    private void Thrust()
     {
         if (Input.GetAxis("Jump") != 0)
         {
@@ -35,7 +39,7 @@ public class Rocket : MonoBehaviour
             {
                 soundEffectPlayer.Play();
             }
-            rb.AddRelativeForce(Vector3.up * 20);
+            rb.AddRelativeForce(Vector3.up * mainThrust);
         }
         else
         {
@@ -44,8 +48,12 @@ public class Rocket : MonoBehaviour
 
     }
 
-    private void Rotation()
+    private void Rotate()
     {
-        transform.Rotate(Input.GetAxis("Horizontal") * -Vector3.forward * Time.deltaTime * 50);
+        rb.freezeRotation = true; //take manual control of rotation
+
+        transform.Rotate(Input.GetAxis("Horizontal") * -Vector3.forward * Time.deltaTime * rotThrust);
+
+        rb.freezeRotation = false; //resume physics control of rotation
     }
 }
