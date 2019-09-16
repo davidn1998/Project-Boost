@@ -7,7 +7,7 @@ public class Rocket : MonoBehaviour
 {
 
     //configuration params
-    [Header("Sound")]
+    [Header("Gameplay")]
     [SerializeField] float respawnDelay = 1f;
 
     [Header("Movement")]
@@ -18,6 +18,11 @@ public class Rocket : MonoBehaviour
     [SerializeField] AudioClip thrusterSFX = null;
     [SerializeField] AudioClip deathSFX = null;
     [SerializeField] AudioClip winSFX = null;
+
+    [Header("Particle Effects")]
+    [SerializeField] ParticleSystem thrusterParticles;
+    [SerializeField] ParticleSystem deathParticles;
+    [SerializeField] ParticleSystem winParticles;
 
     //Cache Variables
     Rigidbody rb = null;
@@ -64,6 +69,7 @@ public class Rocket : MonoBehaviour
     private void ProcessCollision(Collision collision)
     {
         audioSource.Stop();
+        thrusterParticles.Stop();
 
         if (collision.gameObject.CompareTag("Obstacle"))
         {
@@ -79,6 +85,7 @@ public class Rocket : MonoBehaviour
     private void StartWinSequence()
     {
         audioSource.PlayOneShot(winSFX);
+        Instantiate(winParticles.gameObject, transform.position, Quaternion.identity);
         state = State.Transcending;
         Invoke("LoadNextScene", respawnDelay);
     }
@@ -87,6 +94,7 @@ public class Rocket : MonoBehaviour
     private void StartDeathSequence()
     {
         audioSource.PlayOneShot(deathSFX);
+        Instantiate(deathParticles.gameObject, transform.position, Quaternion.identity);
         state = State.Dying;
         Invoke("Respawn", respawnDelay);
     }
@@ -101,7 +109,6 @@ public class Rocket : MonoBehaviour
     private void Respawn()
     {
         state = State.Alive;
-        transform.position = startPosition;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -114,11 +121,13 @@ public class Rocket : MonoBehaviour
             {
                 audioSource.PlayOneShot(thrusterSFX);
             }
+            thrusterParticles.Play();
             rb.AddRelativeForce(Vector3.up * mainThrust);
         }
         else
         {
             audioSource.Stop();
+            thrusterParticles.Stop();
         }
 
     }
