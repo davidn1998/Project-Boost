@@ -30,6 +30,7 @@ public class Rocket : MonoBehaviour
     Vector3 startPosition;
     enum State {Alive, Dying, Transcending};
     State state = State.Alive;
+    int currentSceneIndex;
 
     // Start is called before the first frame update
     void Start()
@@ -37,6 +38,7 @@ public class Rocket : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody>();
         audioSource = gameObject.GetComponent<AudioSource>();
         startPosition = transform.position;
+        currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
     }
 
     // Update is called once per frame
@@ -93,7 +95,7 @@ public class Rocket : MonoBehaviour
     //Die on the level
     private void StartDeathSequence()
     {
-        audioSource.PlayOneShot(deathSFX);
+        audioSource.PlayOneShot(deathSFX, 0.5f);
         Instantiate(deathParticles.gameObject, transform.position, Quaternion.identity);
         state = State.Dying;
         Invoke("Respawn", respawnDelay);
@@ -102,14 +104,21 @@ public class Rocket : MonoBehaviour
     //Loads scene 2
     private void LoadNextScene()
     {
-        SceneManager.LoadScene(1);
+        if (currentSceneIndex == SceneManager.sceneCountInBuildSettings - 1)
+        {
+            SceneManager.LoadScene(currentSceneIndex);
+;       }
+        else
+        {
+            SceneManager.LoadScene(currentSceneIndex + 1);
+        }
     }
 
     //Respawns the player
     private void Respawn()
     {
         state = State.Alive;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(currentSceneIndex);
     }
 
     //Produces the thrust force for the rocket when "jump" axis is input
