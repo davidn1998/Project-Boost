@@ -23,6 +23,7 @@ public class Rocket : MonoBehaviour
     [SerializeField] ParticleSystem thrusterParticles;
     [SerializeField] ParticleSystem deathParticles;
     [SerializeField] ParticleSystem winParticles;
+    [SerializeField] Transform thrusterParticlePos;
 
     //Cache Variables
     Rigidbody rb = null;
@@ -31,6 +32,7 @@ public class Rocket : MonoBehaviour
     enum State {Alive, Dying, Transcending};
     State state = State.Alive;
     int currentSceneIndex;
+    ParticleSystem thrusterParticlesObj;
 
     // Start is called before the first frame update
     void Start()
@@ -70,8 +72,7 @@ public class Rocket : MonoBehaviour
     //Processes collision depending on tag
     private void ProcessCollision(Collision collision)
     {
-        audioSource.Stop();
-        thrusterParticles.Stop();
+        StopThrusters();
 
         if (collision.gameObject.CompareTag("Obstacle"))
         {
@@ -121,24 +122,50 @@ public class Rocket : MonoBehaviour
         SceneManager.LoadScene(currentSceneIndex);
     }
 
-    //Produces the thrust force for the rocket when "jump" axis is input
+    //Starts and stops thrusters depending on input
     private void Thrust()
     {
         if (Input.GetAxis("Jump") != 0)
         {
-            if (!audioSource.isPlaying)
-            {
-                audioSource.PlayOneShot(thrusterSFX);
-            }
-            thrusterParticles.Play();
-            rb.AddRelativeForce(Vector3.up * mainThrust);
+            StartThrusters();
         }
         else
         {
-            audioSource.Stop();
-            thrusterParticles.Stop();
+            StopThrusters();
         }
 
+    }
+
+    //Start thrusters - instantiate particles, play audio and move rocket
+    private void StartThrusters()
+    {
+        //audio
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(thrusterSFX);
+        }
+
+        //particles
+        if (!thrusterParticlesObj)
+        {
+            thrusterParticlesObj = Instantiate(thrusterParticles, thrusterParticlePos.position, Quaternion.identity, transform);
+        }
+
+        //physics
+        rb.AddRelativeForce(Vector3.up * mainThrust);
+    }
+
+    //Stop thrusters - stop audio and destoy particles 
+    private void StopThrusters()
+    {
+        //audio
+        audioSource.Stop();
+
+        //particles
+        if (thrusterParticlesObj)
+        {
+            Destroy(thrusterParticlesObj.gameObject);
+        }
     }
 
     //Rotates the rocket based on horizontal axis input
