@@ -33,6 +33,7 @@ public class Rocket : MonoBehaviour
     State state = State.Alive;
     int currentSceneIndex;
     ParticleSystem thrusterParticlesObj;
+    bool isCollisionEnabled = true;
 
     // Start is called before the first frame update
     void Start()
@@ -59,19 +60,34 @@ public class Rocket : MonoBehaviour
         {
             Thrust();
         }
+
+        if(Debug.isDebugBuild)
+        {
+            RespondToDebugKeys();
+        }
     }
 
-    //Checks collision with other objects.
+    //Debug Keys
+    private void RespondToDebugKeys()
+    {
+        //Load next level
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextScene();
+        }
+
+        //Turn of collision
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            isCollisionEnabled = !isCollisionEnabled;
+        }
+    }
+
+    //Checks and processes collision with other objects.
     private void OnCollisionEnter(Collision collision)
     {
-        if (!(state == State.Alive)) { return; }
+        if (!(state == State.Alive) || !isCollisionEnabled) { return; }
 
-        ProcessCollision(collision);
-    }
-
-    //Processes collision depending on tag
-    private void ProcessCollision(Collision collision)
-    {
         StopThrusters();
 
         if (collision.gameObject.CompareTag("Obstacle"))
@@ -107,7 +123,7 @@ public class Rocket : MonoBehaviour
     {
         if (currentSceneIndex == SceneManager.sceneCountInBuildSettings - 1)
         {
-            SceneManager.LoadScene(currentSceneIndex);
+            SceneManager.LoadScene(0);
 ;       }
         else
         {
